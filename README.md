@@ -61,6 +61,7 @@ Updated with the latest **Union Budget (July 2024 revisions)** for **FY 2024-25 
   - 💼 Mid-Level Software Engineer (₹16 LPA)
   - 🏢 Senior Tech Lead / Manager (₹28 LPA)
   - 👑 Director / Executive (₹60 LPA)
+- **Dark Mode Support**: Seamless toggle between Dark & Light themes with persistent preference in `localStorage` and automatic OS color-scheme detection.
 - **Local Storage**: Automatically saves your inputs so refreshing doesn't lose your work.
 - **Print / PDF Report**: Formatted printable executive summary (`@media print`).
 
