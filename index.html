@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BharatTax - Interactive Indian Income Tax Calculator & Optimizer (FY 2024-25 & FY 2025-26)</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            saffron: '#f97316',
+            indiangreen: '#15803d'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Google Font Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen antialiased">
+
+  <!-- TOP NAVIGATION / HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-700 via-brand-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-brand-500/20">
+            ₹
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-slate-900 to-brand-800 bg-clip-text text-transparent">
+                BharatTax
+              </span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                FY 2024-25 / 2025-26
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 hidden sm:block">Indian Income Tax Calculator & Comparison Tool (Budget July 2024 Revised)</p>
+          </div>
+        </div>
+
+        <!-- Quick Actions & Reset -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button id="btn-save-scenario" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+            <span class="hidden md:inline">Save Data</span>
+          </button>
+          
+          <button id="btn-print-report" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            <span>Print / PDF</span>
+          </button>
+
+          <button id="btn-reset" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg text-rose-600 hover:bg-rose-50 transition" title="Reset all inputs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span class="hidden sm:inline">Reset</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- QUICK PRESETS & PROFILE BAR -->
+  <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white py-4 px-4 sm:px-6 lg:px-8 no-print">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      
+      <!-- Profile Pickers: FY, Age, Employment -->
+      <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+        
+        <!-- Financial Year Selector -->
+        <div class="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5 border border-white/10 backdrop-blur-sm">
+          <label for="fy-select" class="text-xs text-slate-300 font-medium">Financial Year:</label>
+          <select id="fy-select" class="bg-transparent text-sm font-semibold text-white focus:outline-none cursor-pointer">
+            <option value="2024-25" selected class="text-slate-900">FY 2024-25 (AY 2025-26) - Revised Slabs</option>
+            <option value="2025-26" class="text-slate-900">FY 2025-26 (AY 2026-27)</option>
+            <option value="2023-24" class="text-slate-900">FY 2023-24 (AY 2024-25)</option>
+          </select>
+        </div>
+
+        <!-- Age Category -->
+        <div class="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5 border border-white/10 backdrop-blur-sm">
+          <label for="age-select" class="text-xs text-slate-300 font-medium">Age Group:</label>
+          <select id="age-select" class="bg-transparent text-sm font-semibold text-white focus:outline-none cursor-pointer">
+            <option value="<60" selected class="text-slate-900">Below 60 yrs (General)</option>
+            <option value="60-79" class="text-slate-900">60 - 79 yrs (Senior)</option>
+            <option value="80+" class="text-slate-900">80+ yrs (Super Senior)</option>
+          </select>
+        </div>
+
+        <!-- Salaried Toggle -->
+        <div class="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5 border border-white/10 backdrop-blur-sm">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="is-salaried" checked class="w-4 h-4 text-brand-600 rounded focus:ring-0 cursor-pointer">
+            <span class="text-xs font-semibold text-white">Salaried (Std Deduction ₹75k/₹50k)</span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Quick Preset Buttons -->
+      <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+        <span class="text-xs text-slate-400 font-medium mr-1">Load Preset:</span>
+        <button class="preset-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white/10 hover:bg-white/20 border border-white/10 transition" data-preset="fresher">
+          🎓 ₹7.5 LPA (Fresher)
+        </button>
+        <button class="preset-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white/10 hover:bg-white/20 border border-white/10 transition" data-preset="mid">
+          💼 ₹16 LPA (Mid-Level)
+        </button>
+        <button class="preset-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white/10 hover:bg-white/20 border border-white/10 transition" data-preset="lead">
+          🏢 ₹28 LPA (Lead/Mgr)
+        </button>
+        <button class="preset-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white/10 hover:bg-white/20 border border-white/10 transition" data-preset="executive">
+          👑 ₹60 LPA (Exec)
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PRINT ONLY REPORT HEADER -->
+  <div class="hidden print-only p-6 border-b border-slate-300">
+    <div class="flex justify-between items-start">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">BharatTax - Income Tax Calculation & Advisory Report</h1>
+        <p class="text-sm text-slate-600" id="print-timestamp"></p>
+        <p class="text-xs text-slate-500 mt-1">Prepared for Indian Resident Taxpayer | Assessment Year <span id="print-ay">2025-26</span></p>
+      </div>
+      <div class="text-right">
+        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full" id="print-winner-badge">New Regime Recommended</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- LEFT COLUMN: INPUT FORMS (7 Cols on LG) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- 1. SALARY & INCOME FROM EMPLOYMENT -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 interactive-card">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="p-2 rounded-lg bg-blue-50 text-brand-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div>
+                <h2 class="font-bold text-base text-slate-900">Income from Salary / CTC Breakdown</h2>
+                <p class="text-xs text-slate-500">Annual compensation and allowances received from employer</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-500 block">Gross Salary</span>
+              <span class="font-extrabold text-base text-brand-700" id="display-gross-salary">₹0</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Basic Salary -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-basic" class="text-xs font-semibold text-slate-700">Basic Salary (Annual) *</label>
+                <span class="currency-badge" id="words-basic">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-basic" value="900000" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="e.g. 900000">
+              </div>
+            </div>
+
+            <!-- Dearness Allowance (DA) -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-da" class="text-xs font-semibold text-slate-700">Dearness Allowance (DA)</label>
+                <span class="currency-badge" id="words-da">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-da" value="0" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="0">
+              </div>
+            </div>
+
+            <!-- House Rent Allowance (HRA) Received -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-hra-received" class="text-xs font-semibold text-slate-700">HRA Received (Annual)</label>
+                <span class="currency-badge" id="words-hra-received">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-hra-received" value="360000" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="e.g. 360000">
+              </div>
+            </div>
+
+            <!-- Special Allowance -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-special-allowance" class="text-xs font-semibold text-slate-700">Special Allowance</label>
+                <span class="currency-badge" id="words-special-allowance">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-special-allowance" value="240000" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="e.g. 240000">
+              </div>
+            </div>
+
+            <!-- Bonus / Performance Pay -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-bonus" class="text-xs font-semibold text-slate-700">Bonus / Commission / Incentives</label>
+                <span class="currency-badge" id="words-bonus">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-bonus" value="100000" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="0">
+              </div>
+            </div>
+
+            <!-- Other Allowances -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-other-allowance" class="text-xs font-semibold text-slate-700">Other Taxable Allowances</label>
+                <span class="currency-badge" id="words-other-allowance">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-other-allowance" value="0" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="0">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. HRA EXEMPTION CALCULATOR (SECTION 10(13A)) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 interactive-card">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h2 class="font-bold text-base text-slate-900">HRA Exemption Calculator</h2>
+                  <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800">Old Regime Only</span>
+                </div>
+                <p class="text-xs text-slate-500">Calculate tax-exempt House Rent Allowance under Section 10(13A)</p>
+              </div>
+            </div>
+            
+            <!-- Toggle Paying Rent -->
+            <label class="flex items-center gap-2 cursor-pointer">
+              <span class="text-xs font-medium text-slate-600">Paying Rent?</span>
+              <input type="checkbox" id="toggle-paying-rent" checked class="w-4 h-4 text-brand-600 rounded focus:ring-0 cursor-pointer">
+            </label>
+          </div>
+
+          <div id="hra-container" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <!-- Actual Rent Paid -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label for="input-rent-paid" class="text-xs font-semibold text-slate-700">Actual Rent Paid (Annual)</label>
+                  <span class="currency-badge" id="words-rent-paid">₹0</span>
+                </div>
+                <div class="relative rounded-lg shadow-sm">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                  <input type="number" id="input-rent-paid" value="300000" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="e.g. 300000">
+                </div>
+                <span class="text-[11px] text-slate-400 mt-1 block">Or ₹25,000 / month</span>
+              </div>
+
+              <!-- Metro vs Non-Metro City -->
+              <div>
+                <label class="text-xs font-semibold text-slate-700 mb-1 block">City Type</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" id="btn-city-metro" class="city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 text-brand-700 transition flex items-center justify-center gap-1.5" data-metro="true">
+                    <span>🏙️ Metro (50%)</span>
+                  </button>
+                  <button type="button" id="btn-city-nonmetro" class="city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition flex items-center justify-center gap-1.5" data-metro="false">
+                    <span>🏡 Non-Metro (40%)</span>
+                  </button>
+                </div>
+                <span class="text-[11px] text-slate-400 mt-1 block">Metro: Delhi, Mumbai, Kolkata, Chennai</span>
+              </div>
+
+            </div>
+
+            <!-- HRA 3-Rule Breakdown Accordion / Card -->
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+              <div class="font-semibold text-slate-700 mb-2 flex items-center justify-between">
+                <span>Section 10(13A) Exemption Rule (Least of 3):</span>
+                <span class="text-emerald-700 font-bold" id="hra-exempt-badge">Exempt: ₹0</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div class="p-2 rounded bg-white border border-slate-200">
+                  <div class="text-[10px] text-slate-500">1. Actual HRA Received</div>
+                  <div class="font-bold text-slate-800 text-sm mt-0.5" id="hra-rule-1">₹0</div>
+                </div>
+                <div class="p-2 rounded bg-white border border-slate-200">
+                  <div class="text-[10px] text-slate-500">2. Rent Paid - 10% of Basic</div>
+                  <div class="font-bold text-slate-800 text-sm mt-0.5" id="hra-rule-2">₹0</div>
+                </div>
+                <div class="p-2 rounded bg-white border border-slate-200">
+                  <div class="text-[10px] text-slate-500">3. 50%/40% of Basic</div>
+                  <div class="font-bold text-slate-800 text-sm mt-0.5" id="hra-rule-3">₹0</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. HOUSE PROPERTY & OTHER INCOME -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 interactive-card">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="p-2 rounded-lg bg-amber-50 text-amber-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              </div>
+              <div>
+                <h2 class="font-bold text-base text-slate-900">House Property & Other Income</h2>
+                <p class="text-xs text-slate-500">Home loan interest, rental income, and interest on deposits</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Home Loan Interest (Sec 24b) -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-1">
+                  <label for="input-home-loan-interest" class="text-xs font-semibold text-slate-700">Home Loan Interest (Sec 24b)</label>
+                  <span class="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded">Old Only</span>
+                </div>
+                <span class="currency-badge" id="words-home-loan">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-home-loan-interest" value="0" min="0" max="200000" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="Max ₹2,00,000 for self-occupied">
+              </div>
+              <span class="text-[11px] text-slate-400 mt-1 block">Loss set-off capped at ₹2,00,000</span>
+            </div>
+
+            <!-- Savings Bank Interest -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-savings-interest" class="text-xs font-semibold text-slate-700">Savings Bank Interest</label>
+                <span class="currency-badge" id="words-savings-interest">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-savings-interest" value="8000" min="0" step="1000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="0">
+              </div>
+              <span class="text-[11px] text-slate-400 mt-1 block">Deduction up to ₹10k under Sec 80TTA</span>
+            </div>
+
+            <!-- Fixed Deposit / Other Interest -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-fd-interest" class="text-xs font-semibold text-slate-700">FD / Bond / Other Interest</label>
+                <span class="currency-badge" id="words-fd-interest">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-fd-interest" value="0" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="0">
+              </div>
+            </div>
+
+            <!-- Other Income / Dividend / Capital Gains -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-other-income" class="text-xs font-semibold text-slate-700">Other Miscellaneous Income</label>
+                <span class="currency-badge" id="words-other-income">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-other-income" value="0" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="0">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 4. DEDUCTIONS & EXEMPTIONS (CHAPTER VI-A) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 interactive-card">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              </div>
+              <div>
+                <h2 class="font-bold text-base text-slate-900">Tax Deductions & Investments (Chapter VI-A)</h2>
+                <p class="text-xs text-slate-500">80C, NPS, 80D Health Insurance, and eligible deductions</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-500 block">Total 80C Invested</span>
+              <span class="font-extrabold text-sm text-indigo-700" id="display-total-80c">₹0 / ₹1.5L</span>
+            </div>
+          </div>
+
+          <!-- 80C Progress Meter -->
+          <div class="mb-4">
+            <div class="w-full bg-slate-100 rounded-full h-2">
+              <div id="progress-80c" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <!-- 80C: EPF (Employee Provident Fund) -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-epf" class="text-xs font-semibold text-slate-700">EPF (Employee Contribution)</label>
+                <span class="currency-badge" id="words-epf">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-epf" value="108000" min="0" step="1000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="e.g. 108000">
+              </div>
+              <span class="text-[11px] text-slate-400 mt-1 block">Usually 12% of Basic Salary</span>
+            </div>
+
+            <!-- 80C: PPF, ELSS, Life Insurance, Tuition -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-80c-other" class="text-xs font-semibold text-slate-700">PPF / ELSS / LIC / Home Loan Principal</label>
+                <span class="currency-badge" id="words-80c-other">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-80c-other" value="42000" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="0">
+              </div>
+              <span class="text-[11px] text-slate-400 mt-1 block">Total 80C capped at ₹1,50,000</span>
+            </div>
+
+            <!-- 80CCD(1B): Additional NPS Self-Contribution -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-1">
+                  <label for="input-80ccd1b" class="text-xs font-semibold text-slate-700">NPS Employee (Sec 80CCD(1B))</label>
+                  <span class="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded">Old Only</span>
+                </div>
+                <span class="currency-badge" id="words-80ccd1b">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-80ccd1b" value="50000" min="0" max="50000" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="Max ₹50,000">
+              </div>
+              <span class="text-[11px] text-slate-400 mt-1 block">Exclusive ₹50,000 extra deduction</span>
+            </div>
+
+            <!-- 80CCD(2): Employer NPS Contribution -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-1">
+                  <label for="input-80ccd2" class="text-xs font-semibold text-slate-700">Employer NPS (Sec 80CCD(2))</label>
+                  <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Both Regimes!</span>
+                </div>
+                <span class="currency-badge" id="words-80ccd2">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-80ccd2" value="0" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="Up to 14% of Basic + DA">
+              </div>
+              <span class="text-[11px] text-emerald-600 mt-1 block font-medium">Allowed in New Regime as well</span>
+            </div>
+
+            <!-- 80D: Health Insurance Self & Family -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-1">
+                  <label for="input-80d-self" class="text-xs font-semibold text-slate-700">80D: Health Insurance (Self/Family)</label>
+                  <span class="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded">Old Only</span>
+                </div>
+                <span class="currency-badge" id="words-80d-self">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-80d-self" value="25000" min="0" max="50000" step="2500" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="Max ₹25,000 (₹50,000 if senior)">
+              </div>
+            </div>
+
+            <!-- 80D: Health Insurance Parents -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-1">
+                  <label for="input-80d-parents" class="text-xs font-semibold text-slate-700">80D: Health Insurance (Parents)</label>
+                  <span class="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded">Old Only</span>
+                </div>
+                <span class="currency-badge" id="words-80d-parents">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-80d-parents" value="0" min="0" max="50000" step="2500" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="Max ₹25,000 (₹50,000 if senior)">
+              </div>
+            </div>
+
+            <!-- 80E: Higher Education Loan Interest -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-80e" class="text-xs font-semibold text-slate-700">80E: Education Loan Interest</label>
+                <span class="currency-badge" id="words-80e">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-80e" value="0" min="0" step="5000" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="No limit for 8 years">
+              </div>
+            </div>
+
+            <!-- Professional Tax (Section 16(iii)) -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-professional-tax" class="text-xs font-semibold text-slate-700">Professional Tax (PT)</label>
+                <span class="currency-badge" id="words-pt">₹0</span>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">₹</div>
+                <input type="number" id="input-professional-tax" value="2400" min="0" max="2500" step="200" class="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition" placeholder="Usually ₹2,400 to ₹2,500">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: LIVE COMPARISON DASHBOARD (5 Cols on LG, Sticky) -->
+      <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-20">
+
+        <!-- 1. REGIME WINNER HERO CARD -->
+        <div id="winner-hero-card" class="rounded-2xl p-6 text-white bg-gradient-to-br from-emerald-600 to-teal-800 shadow-lg relative overflow-hidden transition-all duration-300">
+          
+          <!-- Background watermark icon -->
+          <div class="absolute -right-6 -bottom-8 opacity-10 text-white pointer-events-none">
+            <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          </div>
+
+          <div class="relative z-10">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span id="winner-tag" class="px-3 py-1 text-xs font-extrabold uppercase tracking-wider rounded-full bg-white/20 text-white backdrop-blur-sm border border-white/20">
+                🎉 Recommended Regime
+              </span>
+              <span id="regime-status-badge" class="text-xs font-semibold text-emerald-100">Optimal Choice</span>
+            </div>
+
+            <h3 id="winner-title" class="text-2xl font-black tracking-tight text-white mb-1">
+              New Tax Regime Saves You ₹0
+            </h3>
+            <p id="winner-subtitle" class="text-xs text-emerald-100/90 leading-relaxed mb-4">
+              Under New Regime (Budget 2024 slabs & ₹75k Standard Deduction), you pay less tax.
+            </p>
+
+            <!-- Break-Even Insight Box -->
+            <div id="break-even-container" class="bg-black/20 backdrop-blur-md rounded-xl p-3 border border-white/10 text-xs">
+              <div class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-emerald-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <p id="break-even-text" class="text-emerald-50 leading-normal">
+                  Calculating deduction break-even analysis...
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. SIDE-BY-SIDE REGIME COMPARISON CARDS -->
+        <div class="grid grid-cols-2 gap-3 print-grid">
+          
+          <!-- Old Regime Card -->
+          <div id="card-old-regime" class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm relative transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-sm text-slate-800">Old Regime</h4>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600">Slabs 2.5L+</span>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-600 border-b border-slate-100 pb-3 mb-3">
+              <div class="flex justify-between">
+                <span class="text-slate-500">Gross Total:</span>
+                <span class="font-medium text-slate-800" id="old-gross">₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Deductions:</span>
+                <span class="font-medium text-emerald-600" id="old-deductions">-₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Taxable:</span>
+                <span class="font-medium text-slate-800" id="old-taxable">₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Sec 87A Rebate:</span>
+                <span class="font-medium text-blue-600" id="old-rebate">₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Cess & Surcharge:</span>
+                <span class="font-medium text-slate-800" id="old-cess">₹0</span>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <span class="text-[11px] text-slate-500 block uppercase font-medium tracking-wider">Total Tax Payable</span>
+              <span class="text-xl font-extrabold text-slate-900 block mt-0.5" id="old-total-tax">₹0</span>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Effective Rate: <span id="old-effective-rate">0%</span></span>
+            </div>
+          </div>
+
+          <!-- New Regime Card -->
+          <div id="card-new-regime" class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm relative transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-sm text-slate-800">New Regime</h4>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800">Default</span>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-600 border-b border-slate-100 pb-3 mb-3">
+              <div class="flex justify-between">
+                <span class="text-slate-500">Gross Total:</span>
+                <span class="font-medium text-slate-800" id="new-gross">₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Std Ded + 80CCD:</span>
+                <span class="font-medium text-emerald-600" id="new-deductions">-₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Taxable:</span>
+                <span class="font-medium text-slate-800" id="new-taxable">₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Sec 87A Rebate:</span>
+                <span class="font-medium text-blue-600" id="new-rebate">₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Cess & Surcharge:</span>
+                <span class="font-medium text-slate-800" id="new-cess">₹0</span>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <span class="text-[11px] text-slate-500 block uppercase font-medium tracking-wider">Total Tax Payable</span>
+              <span class="text-xl font-extrabold text-emerald-600 block mt-0.5" id="new-total-tax">₹0</span>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Effective Rate: <span id="new-effective-rate">0%</span></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3. MONTHLY IN-HAND TAKE-HOME SALARY -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm interactive-card">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-teal-50 text-teal-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900">Monthly Take-Home Pay (In-Hand)</h4>
+            </div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700" id="takehome-active-regime">Recommended</span>
+          </div>
+
+          <div class="flex items-baseline justify-between mb-4">
+            <div>
+              <span class="text-2xl font-black text-slate-900" id="monthly-inhand-pay">₹0</span>
+              <span class="text-xs text-slate-500 block">estimated in-hand per month</span>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-bold px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="monthly-diff-badge">
+                +₹0 / mo extra
+              </span>
+            </div>
+          </div>
+
+          <!-- Monthly deduction breakdown -->
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="p-2 rounded-lg bg-slate-50">
+              <span class="text-slate-400 block text-[10px]">Monthly Gross</span>
+              <span class="font-bold text-slate-800 mt-0.5 block" id="monthly-gross">₹0</span>
+            </div>
+            <div class="p-2 rounded-lg bg-slate-50">
+              <span class="text-slate-400 block text-[10px]">Monthly TDS (Tax)</span>
+              <span class="font-bold text-rose-600 mt-0.5 block" id="monthly-tds">-₹0</span>
+            </div>
+            <div class="p-2 rounded-lg bg-slate-50">
+              <span class="text-slate-400 block text-[10px]">EPF + PT</span>
+              <span class="font-bold text-amber-600 mt-0.5 block" id="monthly-epf-pt">-₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. INTERACTIVE VISUAL CHARTS -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3">Gross Salary Allocation</h4>
+          
+          <div class="flex items-center gap-4">
+            <!-- Donut SVG -->
+            <div class="relative w-28 h-28 shrink-0">
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <!-- Base circle -->
+                <circle cx="50" cy="50" r="40" stroke="#f1f5f9" stroke-width="14" fill="transparent"/>
+                <!-- Take Home Segment -->
+                <circle id="chart-takehome" cx="50" cy="50" r="40" stroke="#10b981" stroke-width="14" fill="transparent" stroke-dasharray="0 251.2" stroke-dashoffset="0" class="chart-donut-segment"/>
+                <!-- Tax Segment -->
+                <circle id="chart-tax" cx="50" cy="50" r="40" stroke="#f43f5e" stroke-width="14" fill="transparent" stroke-dasharray="0 251.2" stroke-dashoffset="0" class="chart-donut-segment"/>
+                <!-- Deductions/EPF Segment -->
+                <circle id="chart-deductions" cx="50" cy="50" r="40" stroke="#6366f1" stroke-width="14" fill="transparent" stroke-dasharray="0 251.2" stroke-dashoffset="0" class="chart-donut-segment"/>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span class="text-[10px] text-slate-400">Take Home</span>
+                <span class="text-xs font-bold text-slate-800" id="chart-center-pct">0%</span>
+              </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="space-y-1.5 text-xs text-slate-600 w-full">
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <span>Net In-Hand</span>
+                </span>
+                <span class="font-semibold text-slate-800" id="legend-takehome">₹0</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                  <span>Income Tax</span>
+                </span>
+                <span class="font-semibold text-slate-800" id="legend-tax">₹0</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                  <span>PF & Deductions</span>
+                </span>
+                <span class="font-semibold text-slate-800" id="legend-deductions">₹0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. SLAB-BY-SLAB BREAKDOWN (EXPANDABLE) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button id="btn-toggle-slabs" class="w-full p-4 text-left flex items-center justify-between hover:bg-slate-50 transition">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              <span class="font-bold text-xs text-slate-800 uppercase tracking-wider">Detailed Slab-by-Slab Calculation</span>
+            </div>
+            <svg id="arrow-slabs" class="w-4 h-4 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+
+          <div id="container-slabs" class="p-4 border-t border-slate-100 hidden">
+            <!-- New Regime Slabs -->
+            <div class="mb-4">
+              <h5 class="text-xs font-bold text-emerald-800 mb-1.5 flex items-center gap-1">
+                <span>New Regime Slabs</span>
+              </h5>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                  <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                    <tr>
+                      <th class="py-1.5 px-2">Slab</th>
+                      <th class="py-1.5 px-2">Rate</th>
+                      <th class="py-1.5 px-2 text-right">Taxable</th>
+                      <th class="py-1.5 px-2 text-right">Tax</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody-new-slabs" class="divide-y divide-slate-100 text-slate-700">
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Old Regime Slabs -->
+            <div>
+              <h5 class="text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
+                <span>Old Regime Slabs</span>
+              </h5>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                  <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                    <tr>
+                      <th class="py-1.5 px-2">Slab</th>
+                      <th class="py-1.5 px-2">Rate</th>
+                      <th class="py-1.5 px-2 text-right">Taxable</th>
+                      <th class="py-1.5 px-2 text-right">Tax</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody-old-slabs" class="divide-y divide-slate-100 text-slate-700">
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. SMART TAX SAVING RECOMMENDATIONS -->
+        <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4">
+          <div class="flex items-center gap-2 mb-2 text-amber-900 font-bold text-xs uppercase tracking-wider">
+            <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+            <span>Tax Optimization Insights</span>
+          </div>
+          <ul id="recommendations-list" class="space-y-2 text-xs text-amber-950/90 leading-relaxed">
+            <!-- Dynamic insights -->
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-12 bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print">
+    <div class="max-w-7xl mx-auto px-4">
+      <p class="font-medium text-slate-700">BharatTax Calculator • Built for Indian Salaried & Professional Taxpayers</p>
+      <p class="mt-1 text-[11px] text-slate-400">
+        Disclaimer: This tool provides general tax estimates based on provisions of the Indian Income Tax Act, 1961 (including Union Budget July 2024 revisions). For formal tax filing and audit compliance, please consult a licensed Chartered Accountant (CA).
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
