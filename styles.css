@@ -17,6 +17,12 @@ body {
   color: #0f172a;
 }
 
+/* Dark mode body & base elements */
+.dark body {
+  background-color: #090d16;
+  color: #f1f5f9;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
@@ -33,6 +39,16 @@ body {
   background: #94a3b8;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
 /* Currency input helper tags */
 .currency-badge {
   font-size: 0.75rem;
@@ -43,6 +59,13 @@ body {
   color: #3730a3;
   display: inline-block;
   white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.dark .currency-badge {
+  background-color: rgba(99, 102, 241, 0.2);
+  color: #c7d2fe;
+  border: 1px solid rgba(99, 102, 241, 0.3);
 }
 
 /* Card hover animation */
@@ -52,17 +75,20 @@ body {
 .interactive-card:hover {
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
+.dark .interactive-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.25);
+}
 
 /* Winner glow styling */
 .winner-glow-green {
   border: 2px solid #10b981 !important;
-  box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.25) !important;
+  box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.35) !important;
   position: relative;
 }
 
 .winner-glow-blue {
   border: 2px solid #3b82f6 !important;
-  box-shadow: 0 0 20px -3px rgba(59, 130, 246, 0.25) !important;
+  box-shadow: 0 0 20px -3px rgba(59, 130, 246, 0.35) !important;
   position: relative;
 }
 
@@ -105,6 +131,11 @@ input[type="number"] {
     background-color: #ffffff !important;
     color: #000000 !important;
     font-size: 11pt;
+  }
+
+  .dark body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
   }
 
   .no-print,

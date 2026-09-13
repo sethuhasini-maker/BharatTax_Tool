@@ -1,6 +1,7 @@
 /**
  * BharatTax - Indian Income Tax Engine & UI Controller
  * Updated for FY 2024-25 (AY 2025-26 - Budget July 2024 revisions) & FY 2025-26
+ * Supports Dark Mode and Light Mode
  */
 
 const TaxEngine = {
@@ -490,12 +491,61 @@ const App = {
   isPayingRent: true,
 
   init() {
+    this.initTheme();
     this.bindEvents();
     this.loadSavedScenario();
     this.calculate();
   },
 
+  initTheme() {
+    const savedTheme = localStorage.getItem('bharattax_theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    this.applyTheme(isDark);
+
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('bharattax_theme')) {
+          this.applyTheme(e.matches);
+        }
+      });
+    }
+  },
+
+  applyTheme(isDark) {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    if (iconSun && iconMoon) {
+      iconSun.classList.toggle('hidden', !isDark);
+      iconMoon.classList.toggle('hidden', isDark);
+    }
+
+    const chartBase = document.getElementById('chart-base-circle');
+    if (chartBase) {
+      chartBase.setAttribute('stroke', isDark ? '#1e293b' : '#f1f5f9');
+    }
+  },
+
+  toggleTheme() {
+    const isDarkNow = document.documentElement.classList.contains('dark');
+    const nextDark = !isDarkNow;
+    localStorage.setItem('bharattax_theme', nextDark ? 'dark' : 'light');
+    this.applyTheme(nextDark);
+  },
+
   bindEvents() {
+    // Theme toggle button
+    const btnTheme = document.getElementById('btn-theme-toggle');
+    if (btnTheme) {
+      btnTheme.addEventListener('click', () => this.toggleTheme());
+    }
+
     // Collect all input elements
     const inputs = document.querySelectorAll('input[type="number"], select, input[type="checkbox"]');
     inputs.forEach(input => {
@@ -509,15 +559,15 @@ const App = {
     if (btnMetro && btnNonMetro) {
       btnMetro.addEventListener('click', () => {
         this.isMetroCity = true;
-        btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 text-brand-700 transition flex items-center justify-center gap-1.5';
-        btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition flex items-center justify-center gap-1.5';
+        btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-blue-300 transition flex items-center justify-center gap-1.5';
+        btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition flex items-center justify-center gap-1.5';
         this.calculate();
       });
 
       btnNonMetro.addEventListener('click', () => {
         this.isMetroCity = false;
-        btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 text-brand-700 transition flex items-center justify-center gap-1.5';
-        btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition flex items-center justify-center gap-1.5';
+        btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-blue-300 transition flex items-center justify-center gap-1.5';
+        btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition flex items-center justify-center gap-1.5';
         this.calculate();
       });
     }
@@ -575,7 +625,7 @@ const App = {
         this.saveScenario();
         btnSave.innerHTML = `<svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="text-emerald-700 font-semibold">Saved!</span>`;
         setTimeout(() => {
-          btnSave.innerHTML = `<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg><span class="hidden md:inline">Save Data</span>`;
+          btnSave.innerHTML = `<svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg><span class="hidden md:inline">Save Data</span>`;
         }, 2000);
       });
     }
@@ -886,9 +936,9 @@ const App = {
 
     if (newTbody) {
       newTbody.innerHTML = newR.slabBreakdown.map(s => `
-        <tr class="hover:bg-slate-50">
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
           <td class="py-1 px-2 font-medium">${s.slab}</td>
-          <td class="py-1 px-2 text-slate-500">${s.rate}</td>
+          <td class="py-1 px-2 text-slate-500 dark:text-slate-400">${s.rate}</td>
           <td class="py-1 px-2 text-right">${TaxEngine.formatINR(s.taxableAmount)}</td>
           <td class="py-1 px-2 text-right font-semibold">${TaxEngine.formatINR(s.tax)}</td>
         </tr>
@@ -897,9 +947,9 @@ const App = {
 
     if (oldTbody) {
       oldTbody.innerHTML = oldR.slabBreakdown.map(s => `
-        <tr class="hover:bg-slate-50">
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
           <td class="py-1 px-2 font-medium">${s.slab}</td>
-          <td class="py-1 px-2 text-slate-500">${s.rate}</td>
+          <td class="py-1 px-2 text-slate-500 dark:text-slate-400">${s.rate}</td>
           <td class="py-1 px-2 text-right">${TaxEngine.formatINR(s.taxableAmount)}</td>
           <td class="py-1 px-2 text-right font-semibold">${TaxEngine.formatINR(s.tax)}</td>
         </tr>
@@ -927,10 +977,16 @@ const App = {
     const taxDash = (taxPct / 100) * circ;
     const dedDash = (dedPct / 100) * circ;
 
+    const elBaseCircle = document.getElementById('chart-base-circle');
     const elTakeHome = document.getElementById('chart-takehome');
     const elTax = document.getElementById('chart-tax');
     const elDeductions = document.getElementById('chart-deductions');
     const elCenter = document.getElementById('chart-center-pct');
+
+    const isDark = document.documentElement.classList.contains('dark');
+    if (elBaseCircle) {
+      elBaseCircle.setAttribute('stroke', isDark ? '#1e293b' : '#f1f5f9');
+    }
 
     if (elTakeHome) {
       elTakeHome.style.strokeDasharray = `${takeHomeDash} ${circ}`;
@@ -1149,11 +1205,11 @@ const App = {
         const btnNonMetro = document.getElementById('btn-city-nonmetro');
         if (btnMetro && btnNonMetro) {
           if (this.isMetroCity) {
-            btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 text-brand-700 transition flex items-center justify-center gap-1.5';
-            btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition flex items-center justify-center gap-1.5';
+            btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-blue-300 transition flex items-center justify-center gap-1.5';
+            btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition flex items-center justify-center gap-1.5';
           } else {
-            btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 text-brand-700 transition flex items-center justify-center gap-1.5';
-            btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition flex items-center justify-center gap-1.5';
+            btnNonMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-brand-500 bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-blue-300 transition flex items-center justify-center gap-1.5';
+            btnMetro.className = 'city-toggle-btn px-3 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition flex items-center justify-center gap-1.5';
           }
         }
       }
